@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorry Please</title>
+<style>
+  :root{
+    --text:#f5f3ee;
+    --muted:#b8b8c0;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;
+    height:100%;
+    background:linear-gradient(-45deg,#1a0b2e,#2d1b4e,#0d0d0f,#3a1c4e,#1a0b2e);
+    background-size:400% 400%;
+    animation:gradientShift 12s ease infinite;
+    color:var(--text);
+    font-family:'Segoe UI',Arial,sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+  }
+  @keyframes gradientShift{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+
+  .float-emoji{
+    position:fixed;
+    bottom:-40px;
+    font-size:22px;
+    opacity:0.75;
+    pointer-events:none;
+    animation:floatUp linear forwards;
+    z-index:0;
+  }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    10%{ opacity:0.8; }
+    100%{ transform:translateY(-110vh) translateX(var(--drift,20px)) rotate(360deg); opacity:0; }
+  }
+
+  .card{
+    background:linear-gradient(160deg,#1e1e24,#141417);
+    border-radius:24px;
+    padding:44px 36px;
+    max-width:480px;
+    width:90%;
+    text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.05) inset;
+    border:1px solid #2a2a32;
+    position:relative;
+    z-index:1;
+    animation:cardIn .6s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes cardIn{
+    0%{ opacity:0; transform:scale(.85) translateY(20px);}
+    100%{ opacity:1; transform:scale(1) translateY(0);}
+  }
+
+  .mascot{
+    font-size:64px;
+    display:block;
+    margin-bottom:12px;
+    animation:bob 2.2s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%{ transform:translateY(-8px) rotate(-4deg); }
+  }
+
+  #msgText{
+    font-size:clamp(20px,4.6vw,28px);
+    font-weight:800;
+    line-height:1.5;
+    margin-bottom:8px;
+    color:#ffe9a8;
+    text-shadow:0 0 18px rgba(255,210,63,.45), 0 2px 6px rgba(0,0,0,.5);
+    animation:colorCycle 5s ease-in-out infinite;
+  }
+  @keyframes colorCycle{
+    0%,100%{ color:#ffe9a8; text-shadow:0 0 18px rgba(255,210,63,.45), 0 2px 6px rgba(0,0,0,.5); }
+    33%{ color:#ffb3d9; text-shadow:0 0 18px rgba(255,110,180,.45), 0 2px 6px rgba(0,0,0,.5); }
+    66%{ color:#a8d8ff; text-shadow:0 0 18px rgba(90,180,255,.45), 0 2px 6px rgba(0,0,0,.5); }
+  }
+  #msgWrap{
+    min-height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:34px;
+  }
+
+  .btn-row{
+    display:flex;
+    gap:18px;
+    justify-content:center;
+    flex-wrap:wrap;
+    position:relative;
+    min-height:60px;
+  }
+  button{
+    font-family:inherit;
+    font-size:18px;
+    font-weight:800;
+    padding:14px 34px;
+    border-radius:12px;
+    border:none;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, filter .15s ease, font-size .25s ease, padding .25s ease;
+  }
+  #yesBtn{
+    background:linear-gradient(135deg,#3fd68a,#2bb673);
+    color:#052015;
+    box-shadow:0 4px 0 #1f8a58, 0 6px 20px rgba(63,214,138,.4);
+    animation:pulseYes 1.6s ease-in-out infinite;
+  }
+  @keyframes pulseYes{
+    0%,100%{ box-shadow:0 4px 0 #1f8a58, 0 6px 20px rgba(63,214,138,.35); }
+    50%{ box-shadow:0 4px 0 #1f8a58, 0 6px 32px rgba(63,214,138,.75); }
+  }
+  #yesBtn:hover{ transform:translateY(-3px) scale(1.05); filter:brightness(1.1); }
+  #yesBtn:active{ transform:translateY(4px) scale(1); box-shadow:0 0 0 #1f8a58; }
+
+  #noBtn{
+    background:linear-gradient(135deg,#ff6b6b,#e84545);
+    color:#2a0505;
+    box-shadow:0 4px 0 #a11f1f, 0 6px 20px rgba(255,77,77,.3);
+    position:relative;
+  }
+  #noBtn:active{ transform:translateY(4px) scale(1); box-shadow:0 0 0 #a11f1f; }
+
+  .counter{
+    margin-top:20px;
+    font-size:13px;
+    color:var(--muted);
+    letter-spacing:.5px;
+    min-height:16px;
+  }
+
+  .success{ display:none; }
+  #msg2{
+    font-size:clamp(20px,4.6vw,26px);
+    font-weight:800;
+    line-height:1.6;
+    color:#8ff0c0;
+    text-shadow:0 0 18px rgba(63,214,138,.5);
+  }
+  .heart{
+    font-size:56px;
+    display:block;
+    margin-bottom:14px;
+    animation:pop .6s ease, heartbeat 1.2s ease-in-out 0.6s infinite;
+  }
+  @keyframes heartbeat{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.18); }
+  }
+  @keyframes pop{
+    0%{transform:scale(0);}
+    60%{transform:scale(1.3);}
+    100%{transform:scale(1);}
+  }
+  @keyframes shakeCard{
+    0%{transform:translateX(0);}
+    20%{transform:translateX(-12px) rotate(-1deg);}
+    40%{transform:translateX(12px) rotate(1deg);}
+    60%{transform:translateX(-7px);}
+    80%{transform:translateX(7px);}
+    100%{transform:translateX(0);}
+  }
+  .shake{ animation:shakeCard .4s ease; }
+
+  .confetti{
+    position:fixed;
+    top:-10px;
+    width:8px;
+    height:14px;
+    opacity:0.9;
+    pointer-events:none;
+    animation:fall linear forwards;
+    z-index:3;
+  }
+  @keyframes fall{
+    to{ transform:translateY(110vh) rotate(360deg); opacity:0; }
+  }
+</style>
+</head>
+<body>
+
+<div id="floatContainer"></div>
+
+<div class="card" id="card">
+  <span class="mascot" id="mascot">🥺</span>
+  <div id="msgWrap"><div id="msgText">Sorry please maaf kardo na</div></div>
+  <div class="btn-row" id="btnRow">
+    <button id="yesBtn" onclick="sayYes()">Yes 🥹</button>
+    <button id="noBtn" onmouseover="dodge()" onclick="sayNo()">No</button>
+  </div>
+  <div class="counter" id="counter"></div>
+</div>
+
+<div class="card success" id="successCard">
+  <span class="heart">❤️❤️</span>
+  <div id="msg2">Mujhe pata tha tum maaf kardogi, bohat achi bestie ho tum</div>
+</div>
+
+<script>
+  const noMessages = [
+    { text:"Esa nh karo please, maaf kardo na", emoji:"🥺" },
+    { text:"Please yaar, maaf kar do na", emoji:"😔" },
+    { text:"Achaaa please, ek baar maaf kar do", emoji:"🙏" },
+    { text:"Bohot bura lag raha hai, please maaf kardo", emoji:"😭" },
+    { text:"Last time, please please maaf kardo", emoji:"🥹" },
+    { text:"Ab to maan bhi jao yaar", emoji:"😩" }
+  ];
+
+  const msgText = document.getElementById('msgText');
+  const mascot = document.getElementById('mascot');
+  const card = document.getElementById('card');
+  const counter = document.getElementById('counter');
+  const noBtn = document.getElementById('noBtn');
+  const yesBtn = document.getElementById('yesBtn');
+  const btnRow = document.getElementById('btnRow');
+  let noCount = 0;
+
+  function sayNo(){
+    noCount++;
+    const idx = Math.min(noCount - 1, noMessages.length - 1);
+    msgText.textContent = noMessages[idx].text;
+    mascot.textContent = noMessages[idx].emoji;
+
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+
+    const growth = Math.min(noCount * 3, 30);
+    yesBtn.style.fontSize = (18 + growth * 0.6) + 'px';
+    yesBtn.style.padding = (14 + growth * 0.4) + 'px ' + (34 + growth) + 'px';
+    const shrink = Math.min(noCount * 1.2, 8);
+    noBtn.style.fontSize = Math.max(18 - shrink, 11) + 'px';
+    noBtn.style.padding = Math.max(14 - shrink, 7) + 'px ' + Math.max(34 - shrink * 3, 14) + 'px';
+
+    counter.textContent = noCount > 1 ? ("koshish #" + noCount + " 😅") : "";
+  }
+
+  function dodge(){
+    if (noCount < 1) return;
+    const rowRect = btnRow.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
+    const maxX = rowRect.width - btnRect.width;
+    const maxY = 40;
+    const randX = (Math.random() - 0.5) * 2 * (maxX * 0.4);
+    const randY = (Math.random() - 0.5) * 2 * maxY;
+    noBtn.style.transition = 'transform .18s ease';
+    noBtn.style.transform = `translate(${randX}px, ${randY}px)`;
+  }
+
+  function sayYes(){
+    document.getElementById('card').style.display = 'none';
+    document.getElementById('successCard').style.display = 'block';
+    launchConfetti();
+  }
+
+  function launchConfetti(){
+    const colors = ['#3fd68a','#ffd23f','#ff4d4d','#3fa9ff','#ffffff','#ff9ff3'];
+    for(let i=0;i<70;i++){
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random()*100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.animationDuration = (2 + Math.random()*2) + 's';
+      c.style.animationDelay = (Math.random()*0.5) + 's';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(), 4500);
+    }
+    const emojis = ['🎉','❤️','✨','💖','🥳','🎊'];
+    for(let i=0;i<20;i++){
+      const e = document.createElement('div');
+      e.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      e.style.position = 'fixed';
+      e.style.left = Math.random()*100 + 'vw';
+      e.style.top = '-30px';
+      e.style.fontSize = (18 + Math.random()*18) + 'px';
+      e.style.zIndex = 3;
+      e.style.pointerEvents = 'none';
+      e.style.animation = 'fall ' + (2.5 + Math.random()*2) + 's ease-in forwards';
+      e.style.animationDelay = (Math.random()*0.6) + 's';
+      document.body.appendChild(e);
+      setTimeout(()=>e.remove(), 5000);
+    }
+  }
+
+  const floatContainer = document.getElementById('floatContainer');
+  const ambientEmojis = ['💕','✨','💫','❤️','🌸'];
+  function spawnAmbient(){
+    const e = document.createElement('div');
+    e.className = 'float-emoji';
+    e.textContent = ambientEmojis[Math.floor(Math.random()*ambientEmojis.length)];
+    e.style.left = Math.random()*100 + 'vw';
+    e.style.setProperty('--drift', (Math.random()*80 - 40) + 'px');
+    e.style.animationDuration = (6 + Math.random()*5) + 's';
+    floatContainer.appendChild(e);
+    setTimeout(()=>e.remove(), 11000);
+  }
+  setInterval(spawnAmbient, 900);
+  spawnAmbient();
+</script>
+</body>
+</html>
